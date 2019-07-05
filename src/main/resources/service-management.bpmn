@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1uhhh3s" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <bpmn:process id="ServiceManagementProcess" name="Service Management" isExecutable="true">
+    <bpmn:sequenceFlow id="SequenceFlow_17vsvve" sourceRef="CustomerNeedsActionOnServiceStartEvent" targetRef="IsItCancellationGateway" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zywbln" sourceRef="GetServiceRequirementsTask" targetRef="EvaluateCustomerRequirementsTask" />
+    <bpmn:endEvent id="MainServiceSetupDoneEndEvent" name="Main Service Setup Done">
+      <bpmn:incoming>SequenceFlow_18kdrm8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:businessRuleTask id="GetServiceRequirementsTask" name="Get Service Requirements" camunda:resultVariable="serviceRequirements" camunda:decisionRef="service-requirements">
+      <bpmn:incoming>NoSequenceFlow</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0zywbln</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="SequenceFlow_05wvddq" sourceRef="EvaluateCustomerRequirementsTask" targetRef="AnyRequirementsGateway" />
+    <bpmn:serviceTask id="EvaluateCustomerRequirementsTask" name="Evaluate Customer Requirements" camunda:delegateExpression="${evaluateCustomerReqDelegate}">
+      <bpmn:incoming>SequenceFlow_0zywbln</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_05wvddq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="IsItCancellationGateway" name="Is it cancellation?">
+      <bpmn:incoming>SequenceFlow_17vsvve</bpmn:incoming>
+      <bpmn:outgoing>NoSequenceFlow</bpmn:outgoing>
+      <bpmn:outgoing>YesSequenceFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="NoSequenceFlow" name="No" sourceRef="IsItCancellationGateway" targetRef="GetServiceRequirementsTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requestType != "CANCELLATION"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_18kdrm8" sourceRef="ExecuteMainServiceCallActivity" targetRef="MainServiceSetupDoneEndEvent" />
+    <bpmn:callActivity id="ExecuteMainServiceCallActivity" name="Execute Main Service" calledElement="${serviceProcess}">
+      <bpmn:extensionElements>
+        <camunda:in source="serviceType" target="serviceType" />
+        <camunda:in source="customerId" target="customerId" />
+        <camunda:in source="requestDate" target="requestDate" />
+        <camunda:in source="requestType" target="requestType" />
+        <camunda:in source="requirementsNumber" target="requirementsLeft" />
+        <camunda:in businessKey="${orderId}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1qegnhk</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_18kdrm8</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:startEvent id="CustomerNeedsActionOnServiceStartEvent" name="Customer Needs Action on Service" camunda:asyncBefore="true" camunda:formKey="embedded:app:forms/start-form.html">
+      <bpmn:extensionElements>
+        <camunda:executionListener delegateExpression="${baseListener}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_17vsvve</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="NoSequenceFlow1" name="No" sourceRef="AnyRequirementsGateway" targetRef="ExclusiveGateway_1abj4pc">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${empty requirementList}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="YesSequenceFlow1" name="Yes" sourceRef="AnyRequirementsGateway" targetRef="ExclusiveGateway_0gj23kq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not empty requirementList}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="AnyRequirementsGateway" name="Any Requirements?">
+      <bpmn:incoming>SequenceFlow_05wvddq</bpmn:incoming>
+      <bpmn:outgoing>NoSequenceFlow1</bpmn:outgoing>
+      <bpmn:outgoing>YesSequenceFlow1</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_17gwuts" sourceRef="ExclusiveGateway_0gj23kq" targetRef="SubProcess_1fcsell" />
+    <bpmn:parallelGateway id="ExclusiveGateway_0gj23kq">
+      <bpmn:incoming>YesSequenceFlow1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17gwuts</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0jpcjf2</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0jpcjf2" sourceRef="ExclusiveGateway_0gj23kq" targetRef="ExclusiveGateway_1abj4pc" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1abj4pc">
+      <bpmn:incoming>NoSequenceFlow1</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0jpcjf2</bpmn:incoming>
+      <bpmn:incoming>YesSequenceFlow</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1qegnhk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="RequirementsDoneEndEvent" name="Requirements Done">
+      <bpmn:incoming>SequenceFlow_0fzhobc</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:subProcess id="SubProcess_1fcsell">
+      <bpmn:incoming>SequenceFlow_17gwuts</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0fzhobc</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${requirementList}" camunda:elementVariable="requirement" />
+      <bpmn:callActivity id="ExecuteRequirementModificationsCallActivity" name="Execute Requirement Modifications" calledElement="${requirement.processKey}">
+        <bpmn:extensionElements>
+          <camunda:in source="serviceType" target="serviceType" />
+          <camunda:in source="customerId" target="customerId" />
+          <camunda:in source="requestDate" target="requestDate" />
+          <camunda:in source="requestType" target="requestType" />
+          <camunda:in sourceExpression="${requirement.requirementType}" target="requirementType" />
+          <camunda:in sourceExpression="0" target="requirementsLeft" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>SequenceFlow_0yx08vd</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_09e3nro</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:startEvent id="StartEvent_14wj6cl">
+        <bpmn:outgoing>SequenceFlow_0yx08vd</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_0yx08vd" sourceRef="StartEvent_14wj6cl" targetRef="ExecuteRequirementModificationsCallActivity" />
+      <bpmn:sequenceFlow id="SequenceFlow_09e3nro" sourceRef="ExecuteRequirementModificationsCallActivity" targetRef="DecreaseRequirementTask" />
+      <bpmn:endEvent id="EndEvent_0vdfds4">
+        <bpmn:incoming>SequenceFlow_05cysmu</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_05cysmu" sourceRef="DecreaseRequirementTask" targetRef="EndEvent_0vdfds4" />
+      <bpmn:serviceTask id="DecreaseRequirementTask" name="Decrease Requirement" camunda:delegateExpression="${decreaseRequirementDelegate}">
+        <bpmn:incoming>SequenceFlow_09e3nro</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_05cysmu</bpmn:outgoing>
+      </bpmn:serviceTask>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="SequenceFlow_0fzhobc" sourceRef="SubProcess_1fcsell" targetRef="RequirementsDoneEndEvent" />
+    <bpmn:sequenceFlow id="YesSequenceFlow" name="Yes" sourceRef="IsItCancellationGateway" targetRef="ExclusiveGateway_1abj4pc">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requestType == "CANCELLATION"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1qegnhk" sourceRef="ExclusiveGateway_1abj4pc" targetRef="ExecuteMainServiceCallActivity" />
+  </bpmn:process>
+  <bpmn:message id="Message_1x932pv" name="MensajeNuevoServicio" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ServiceManagementProcess">
+      <bpmndi:BPMNShape id="CallActivity_1j6qgl2_di" bpmnElement="ExecuteRequirementModificationsCallActivity">
+        <dc:Bounds x="1021" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17vsvve_di" bpmnElement="SequenceFlow_17vsvve">
+        <di:waypoint x="229" y="233" />
+        <di:waypoint x="286" y="233" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zywbln_di" bpmnElement="SequenceFlow_0zywbln">
+        <di:waypoint x="503" y="233" />
+        <di:waypoint x="556" y="233" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_01qhimm_di" bpmnElement="MainServiceSetupDoneEndEvent">
+        <dc:Bounds x="1091" y="78" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1077" y="121" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_125ave4_di" bpmnElement="GetServiceRequirementsTask">
+        <dc:Bounds x="403" y="193" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_05wvddq_di" bpmnElement="SequenceFlow_05wvddq">
+        <di:waypoint x="656" y="233" />
+        <di:waypoint x="690" y="233" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_087c3ec_di" bpmnElement="EvaluateCustomerRequirementsTask">
+        <dc:Bounds x="556" y="193" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_061bzih_di" bpmnElement="IsItCancellationGateway" isMarkerVisible="true">
+        <dc:Bounds x="286" y="208" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="268" y="268" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zuaqaa_di" bpmnElement="NoSequenceFlow">
+        <di:waypoint x="336" y="233" />
+        <di:waypoint x="403" y="233" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="362" y="215" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_18kdrm8_di" bpmnElement="SequenceFlow_18kdrm8">
+        <di:waypoint x="1025" y="96" />
+        <di:waypoint x="1091" y="96" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_0fd38xv_di" bpmnElement="ExecuteMainServiceCallActivity">
+        <dc:Bounds x="925" y="56" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1p88g0p_di" bpmnElement="CustomerNeedsActionOnServiceStartEvent">
+        <dc:Bounds x="193" y="215" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="169" y="258" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1w6jk9y_di" bpmnElement="NoSequenceFlow1">
+        <di:waypoint x="715" y="208" />
+        <di:waypoint x="715" y="96" />
+        <di:waypoint x="824" y="96" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="99" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ij2o1z_di" bpmnElement="YesSequenceFlow1">
+        <di:waypoint x="740" y="233" />
+        <di:waypoint x="824" y="233" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="779" y="215" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0bwo6th_di" bpmnElement="AnyRequirementsGateway" isMarkerVisible="true">
+        <dc:Bounds x="690" y="208" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="265" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17gwuts_di" bpmnElement="SequenceFlow_17gwuts">
+        <di:waypoint x="849" y="258" />
+        <di:waypoint x="849" y="389" />
+        <di:waypoint x="893" y="389" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_085n02e_di" bpmnElement="ExclusiveGateway_0gj23kq">
+        <dc:Bounds x="824" y="208" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jpcjf2_di" bpmnElement="SequenceFlow_0jpcjf2">
+        <di:waypoint x="849" y="208" />
+        <di:waypoint x="849" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1abj4pc_di" bpmnElement="ExclusiveGateway_1abj4pc" isMarkerVisible="true">
+        <dc:Bounds x="824" y="71" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1ebl14y_di" bpmnElement="RequirementsDoneEndEvent">
+        <dc:Bounds x="1452" y="371" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1436" y="414" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubProcess_1fcsell_di" bpmnElement="SubProcess_1fcsell" isExpanded="true">
+        <dc:Bounds x="893" y="296" width="500" height="185" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_14wj6cl_di" bpmnElement="StartEvent_14wj6cl">
+        <dc:Bounds x="913" y="369" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0yx08vd_di" bpmnElement="SequenceFlow_0yx08vd">
+        <di:waypoint x="949" y="387" />
+        <di:waypoint x="1021" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_09e3nro_di" bpmnElement="SequenceFlow_09e3nro">
+        <di:waypoint x="1121" y="387" />
+        <di:waypoint x="1172" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0vdfds4_di" bpmnElement="EndEvent_0vdfds4">
+        <dc:Bounds x="1323" y="369" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_05cysmu_di" bpmnElement="SequenceFlow_05cysmu">
+        <di:waypoint x="1272" y="387" />
+        <di:waypoint x="1323" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0fzhobc_di" bpmnElement="SequenceFlow_0fzhobc">
+        <di:waypoint x="1393" y="389" />
+        <di:waypoint x="1452" y="389" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1a3nj8m_di" bpmnElement="DecreaseRequirementTask">
+        <dc:Bounds x="1172" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1aswje8_di" bpmnElement="YesSequenceFlow">
+        <di:waypoint x="311" y="208" />
+        <di:waypoint x="311" y="39" />
+        <di:waypoint x="849" y="39" />
+        <di:waypoint x="849" y="71" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="852" y="61" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1qegnhk_di" bpmnElement="SequenceFlow_1qegnhk">
+        <di:waypoint x="874" y="96" />
+        <di:waypoint x="925" y="96" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1g3fdsc" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <bpmn:process id="RequirementSetupProcess" name="Requirement Setup" isExecutable="true" camunda:isStartableInTasklist="false">
+    <bpmn:startEvent id="RequirementNeedsSetupStartEvent" name="Requirement Needs Setup">
+      <bpmn:outgoing>SequenceFlow_0c3992d</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0c3992d" sourceRef="RequirementNeedsSetupStartEvent" targetRef="ReviewRequirementSetupTask" />
+    <bpmn:serviceTask id="SetupRequirementTask" name="Setup Requirement" camunda:delegateExpression="${loggerDelegate}">
+      <bpmn:incoming>SequenceFlow_1umzxh1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1pkwrx9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="RequirementSetupDoneEndEvent" name="Requirement Setup Done">
+      <bpmn:incoming>SequenceFlow_1pkwrx9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1pkwrx9" sourceRef="SetupRequirementTask" targetRef="RequirementSetupDoneEndEvent" />
+    <bpmn:sequenceFlow id="SequenceFlow_0bzvazt" sourceRef="ReviewRequirementSetupTask" targetRef="IntermediateThrowEvent_0z3ngox" />
+    <bpmn:userTask id="ReviewRequirementSetupTask" name="Review Requirement Setup" camunda:formKey="embedded:app:forms/service-setup-form.html">
+      <bpmn:incoming>SequenceFlow_0c3992d</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0bzvazt</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1umzxh1" sourceRef="IntermediateThrowEvent_0z3ngox" targetRef="SetupRequirementTask" />
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0z3ngox" name="Requirements Done">
+      <bpmn:incoming>SequenceFlow_0bzvazt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1umzxh1</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition camunda:variableName="requirementsLeft" camunda:variableEvent="create, update">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${requirementsLeft == 0}</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RequirementSetupProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="RequirementNeedsSetupStartEvent">
+        <dc:Bounds x="179" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="165" y="146" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0c3992d_di" bpmnElement="SequenceFlow_0c3992d">
+        <di:waypoint x="215" y="121" />
+        <di:waypoint x="253" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1u34f6t_di" bpmnElement="SetupRequirementTask">
+        <dc:Bounds x="492" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0ocx2s4_di" bpmnElement="RequirementSetupDoneEndEvent">
+        <dc:Bounds x="642" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="629" y="146" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1pkwrx9_di" bpmnElement="SequenceFlow_1pkwrx9">
+        <di:waypoint x="592" y="121" />
+        <di:waypoint x="642" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0bzvazt_di" bpmnElement="SequenceFlow_0bzvazt">
+        <di:waypoint x="353" y="121" />
+        <di:waypoint x="398" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0s6rsk6_di" bpmnElement="ReviewRequirementSetupTask">
+        <dc:Bounds x="253" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1umzxh1_di" bpmnElement="SequenceFlow_1umzxh1">
+        <di:waypoint x="434" y="121" />
+        <di:waypoint x="492" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1cbe4d0_di" bpmnElement="IntermediateThrowEvent_0z3ngox">
+        <dc:Bounds x="398" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="382" y="146" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

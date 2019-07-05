@@ -1,0 +1,41 @@
+<form class="form-horizontal">
+  <div class="form-group">
+    <label class="control-label">Customer Id</label>
+    <div class="controls">
+      <input type="text"
+             cam-variable-name="customerId"
+             cam-variable-type="String"
+             required
+             class="form-control" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Request Type</label>
+    <div class="controls">
+      <select cam-variable-name="requestType"
+              cam-variable-type="String"
+              required
+              class="form-control" >
+        <option value="NEW">New Installation</option>
+        <option value="MODIFICATION">Installation Modification</option>
+        <option value="CANCELLATION">Cancellation</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label">Service</label>
+    <div class="controls">
+      <select cam-variable-name="serviceType"
+              cam-variable-type="String"
+              required
+              class="form-control">
+        <option value="IPTV">IPTV</option>
+        <option value="INTERNET_100MBPS">Internet 100 MBPS</option>
+      </select>
+    </div>
+  </div>
+
+  <script cam-script type="text/form-script">
+  // custom JavaScript goes here
+  </script>
+</form>

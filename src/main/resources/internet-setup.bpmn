@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_023ksfb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <bpmn:process id="InternetSetupProcess" name="Internet Setup" isExecutable="true" camunda:isStartableInTasklist="false">
+    <bpmn:startEvent id="StartEvent_1" name="Internet Needs Setup">
+      <bpmn:outgoing>SequenceFlow_0s595tg</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0s595tg" sourceRef="StartEvent_1" targetRef="Task_063va5j" />
+    <bpmn:endEvent id="EndEvent_0ooj00v" name="Internet Setup Done">
+      <bpmn:incoming>SequenceFlow_02c1zn8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_02c1zn8" sourceRef="SetupInternetTask" targetRef="EndEvent_0ooj00v" />
+    <bpmn:serviceTask id="SetupInternetTask" name="Setup Internet" camunda:delegateExpression="${loggerDelegate}">
+      <bpmn:incoming>SequenceFlow_147lllp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_02c1zn8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1ns1jbs" sourceRef="Task_063va5j" targetRef="IntermediateThrowEvent_009kcvb" />
+    <bpmn:userTask id="Task_063va5j" name="Review Internet Setup" camunda:formKey="embedded:app:forms/service-setup-form.html">
+      <bpmn:incoming>SequenceFlow_0s595tg</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ns1jbs</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_147lllp" sourceRef="IntermediateThrowEvent_009kcvb" targetRef="SetupInternetTask" />
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_009kcvb" name="Requirements Done">
+      <bpmn:incoming>SequenceFlow_1ns1jbs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_147lllp</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition camunda:variableName="requirementsLeft" camunda:variableEvent="create, update">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${requirementsLeft == 0}</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="InternetSetupProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="161" y="146" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0s595tg_di" bpmnElement="SequenceFlow_0s595tg">
+        <di:waypoint x="215" y="121" />
+        <di:waypoint x="272" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0ooj00v_di" bpmnElement="EndEvent_0ooj00v">
+        <dc:Bounds x="634" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="617" y="146" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_02c1zn8_di" bpmnElement="SequenceFlow_02c1zn8">
+        <di:waypoint x="584" y="121" />
+        <di:waypoint x="634" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_00va4iy_di" bpmnElement="SetupInternetTask">
+        <dc:Bounds x="484" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ns1jbs_di" bpmnElement="SequenceFlow_1ns1jbs">
+        <di:waypoint x="372" y="121" />
+        <di:waypoint x="407" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0aknaay_di" bpmnElement="Task_063va5j">
+        <dc:Bounds x="272" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_147lllp_di" bpmnElement="SequenceFlow_147lllp">
+        <di:waypoint x="443" y="121" />
+        <di:waypoint x="484" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1vnhk1e_di" bpmnElement="IntermediateThrowEvent_009kcvb">
+        <dc:Bounds x="407" y="103" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="391" y="146" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1sslhrm" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <decision id="service-requirements" name="Service Requirements">
+    <extensionElements>
+      <biodi:bounds x="-154" y="-71" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="decisionTable_1" hitPolicy="RULE ORDER">
+      <input id="input_1" label="Service Type" camunda:inputVariable="serviceType">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text>serviceType</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0t32nkz" label="Service Process" name="serviceProcess" typeRef="string" />
+      <output id="output_1" label="Requirement" name="requirement" typeRef="string" />
+      <output id="OutputClause_1d3nkhz" label="Requirement Process" name="requirementProcess" typeRef="string" />
+      <rule id="DecisionRule_1057ko7">
+        <inputEntry id="UnaryTests_100mj6e">
+          <text>"IPTV"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pl7q17">
+          <text>"IPTVSetupProcess"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06bonkh">
+          <text>"INTERNET_100MBPS"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dvnn8m">
+          <text>"InternetSetupProcess"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_05y51wp">
+        <inputEntry id="UnaryTests_033p3dc">
+          <text>"IPTV"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_173bb5r">
+          <text>"IPTVSetupProcess"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1s5x5w7">
+          <text>"REQUIREMENT_2"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0q4ztjd">
+          <text>"RequirementSetupProcess"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0f80myc">
+        <inputEntry id="UnaryTests_12pyvnt">
+          <text>"IPTV"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pa0p6u">
+          <text>"IPTVSetupProcess"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0oti2lm">
+          <text>"REQUIREMENT_3"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0glxwdw">
+          <text>"RequirementSetupProcess"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1jtdb1m">
+        <inputEntry id="UnaryTests_0kjdt11">
+          <text>"INTERNET_100MBPS"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_063g4sn">
+          <text>"InternetSetupProcess"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1mbzwms">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1s6d3kb">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
